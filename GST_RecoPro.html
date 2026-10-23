@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GST RecoPro – Purchase Register vs GSTR-2B</title>
+<style>
+:root{--bg:#f2f5f9;--card:#fff;--ink:#0b2545;--mut:#5b6b7f;--line:#d9e1ea;--navy:#0b2545;--teal:#0e9f93;--tealS:#d9f4f1;--in:#f7f9fc}
+[data-theme=dark]{--bg:#06142a;--card:#0d2240;--ink:#e6eef7;--mut:#93a7c1;--line:#1c3659;--teal:#2dd4bf;--tealS:#0f3a46;--in:#0a1b34}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+header{background:var(--navy);color:#fff;display:flex;align-items:center;gap:20px;padding:10px 24px;flex-wrap:wrap;position:sticky;top:0;z-index:5;border-bottom:3px solid var(--teal)}
+.brand{font-size:20px;font-weight:700;letter-spacing:.2px}.brand b{color:#2dd4bf}.brand small{display:block;font-size:11px;font-weight:400;opacity:.7}
+nav{display:flex;gap:4px;flex:1}nav button{background:none;border:0;color:#c9d6e6;padding:8px 14px;border-radius:8px;cursor:pointer;font:inherit}nav button.on,nav button:hover{background:rgba(45,212,191,.16);color:#fff}
+main{max-width:1280px;margin:0 auto;padding:20px}section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+h2{margin:0 0 4px;font-size:17px}h3{margin:0 0 10px;font-size:15px}p.s{color:var(--mut);margin:0 0 12px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px}
+.dz{display:block;border:2px dashed var(--teal);border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:var(--in);transition:.2s}.dz:hover,.dz.hv{background:var(--tealS)}.dz input{display:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:10px 0}label{font-size:12px;color:var(--mut);display:flex;flex-direction:column;gap:3px}
+select,input[type=number],input[type=text]{background:var(--in);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:6px 8px;font:inherit;min-width:0}
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+button.b{background:var(--teal);color:#06223a;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;transition:transform .15s}button.b:hover{transform:translateY(-1px)}
+button.ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}button.ghost:hover{border-color:var(--teal)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:var(--in);position:sticky;top:0;font-weight:600;white-space:nowrap}
+.tw{overflow:auto;max-height:640px;border:1px solid var(--line);border-radius:10px}.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.bad{color:#dc2626;font-weight:600}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}.k{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;padding:12px 14px}.k span{font-size:12px;color:var(--mut)}.k b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;color:#fff;font-size:11.5px;font-weight:600;white-space:nowrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:4px 11px;border-radius:99px;cursor:pointer;font:inherit;font-size:12px}.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}[data-theme=dark] .chip.on{background:var(--teal);color:#06223a}
+.bar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}.bar i{display:block;height:14px;border-radius:5px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}.bar em{font-style:normal;min-width:130px;color:var(--mut)}
+.w{background:#fff7e0;border:1px solid #f2d27a;color:#6b4e00;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:12.5px}[data-theme=dark] .w{background:#3b3115;color:#f6dd9b;border-color:#6b5a25}
+.er{background:#fde8e8;border-color:#f0a5a5;color:#7a1414}.ok{background:#e3f6ea;border-color:#9bd7b1;color:#14532d}
+.cols{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:center}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 16px;border-radius:9px;opacity:0;transition:.3s;pointer-events:none;z-index:9;border-left:4px solid var(--teal);max-width:380px}#toast.on{opacity:1}
+ol li,ul li{margin:4px 0}small{color:var(--mut)}.rm{width:130px}
+@media(max-width:700px){.cols{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{header,nav,.noprint,#s-load,#s-method{display:none!important}body{background:#fff;color:#000}#s-dash{display:block!important}.card,.k{break-inside:avoid;border-color:#bbb}.tw{max-height:none;overflow:visible}.rm,select{border:0;background:none}.pill{border:1px solid #000;color:#000!important;background:none!important}.printhd{display:block!important}}
+.printhd{display:none;margin-bottom:10px}
+</style></head><body>
+<header><div class="brand">GST <b>RecoPro</b><small>Purchase Register ⇄ GSTR-2B reconciliation · runs 100% in your browser</small></div>
+<nav><button class="on" data-t="load">1 · Upload &amp; map</button><button data-t="dash">2 · Results</button><button data-t="method">Method &amp; help</button></nav>
+<button class="ghost" style="color:#fff;border-color:#4b6485" onclick="theme()" aria-label="Toggle dark or light mode">◐ Theme</button></header>
+<main>
+<section id="s-load" class="on">
+<div class="card"><h2>Load your data</h2><p class="s">Upload the Purchase Register and the GSTR-2B (XLSX, XLS or CSV). One workbook with both datasets works too: load it in either box, then press “Use same workbook” and pick a sheet for each. Files are read locally and never uploaded.</p>
+<div class="row"><button class="b" onclick="demo()">Load demo data</button><small>Fictional invoices with deliberate mismatches, duplicates and missing records.</small></div><div id="msg"></div></div>
+<div class="g2">
+<div class="card"><h3>Purchase Register (books)</h3><label class="dz" data-k="pr">Drop file here or click to browse<input type="file" accept=".xlsx,.xls,.xlsm,.csv,.tsv,.txt"></label><div id="c-pr"></div></div>
+<div class="card"><h3>GSTR-2B (portal data)</h3><label class="dz" data-k="b2">Drop file here or click to browse<input type="file" accept=".xlsx,.xls,.xlsm,.csv,.tsv,.txt"></label><div id="c-b2"></div></div></div>
+<div class="card"><h3>Reconciliation settings</h3><div class="row">
+<label>Reporting period (label)<input type="text" id="per" placeholder="e.g. September 2025"></label>
+<label>Amount tolerance (₹)<input type="number" id="tol" value="1" min="0" step="0.5"></label>
+<label>Date window (days)<input type="number" id="days" value="5" min="0"></label>
+<label>Fuzzy invoice threshold (%)<input type="number" id="thr" value="80" min="50" max="99"></label>
+<label style="flex-direction:row;align-items:center;gap:6px;color:var(--ink)"><input type="checkbox" id="fz" checked>Enable fuzzy matching</label>
+<button class="b" onclick="go()">Run reconciliation</button></div></div>
+</section>
+<section id="s-dash"><div class="printhd"><h2>GST RecoPro – Reconciliation report</h2><div id="phd"></div></div>
+<div id="empty" class="card">No results yet. Load data and press “Run reconciliation”.</div><div id="dashc"></div></section>
+<section id="s-method"><div class="card"><h2>How it works</h2><ol>
+<li><b>Normalise.</b> GSTIN: upper-case, symbols removed. Invoice no.: upper-case; symbols removed; leading zeros in numeric parts ignored (so <i>INV/001</i> = <i>INV-1</i>). Dates: dd/mm/yyyy, dd-mm-yyyy, yyyy-mm-dd, dd-Mon-yyyy and Excel serials. Amounts: ₹, commas and (brackets) handled.</li>
+<li><b>Exact pass.</b> Same GSTIN + same normalised invoice no. Status <i>Matched</i> if taxable value and each tax head are within the amount tolerance and the date is within the date window; otherwise <i>Mismatch</i> with the reason listed.</li>
+<li><b>Fuzzy pass (optional).</b> Same GSTIN with a similar invoice no. (Levenshtein similarity ≥ threshold, or ≥ 50% with equal value and date), plus same invoice no. under a different GSTIN with equal value. These are <i>Probable</i> and need your review.</li>
+<li><b>One-to-one pairing.</b> All candidate pairs are ranked (exact first, then confidence) and assigned greedily, so no invoice is paired twice or counted twice.</li>
+<li><b>Leftovers.</b> Repeated GSTIN + invoice keys are <i>Duplicate</i>; the rest are <i>Missing in 2B</i> or <i>Missing in PR</i>. Rows with no GSTIN or invoice number stay visible as missing. Nothing is dropped except fully blank rows (counted and reported). An integrity check confirms every row is accounted for.</li>
+<li><b>Confidence</b> = 50% invoice similarity + 30% taxable-value closeness + 20% date closeness.</li></ol>
+<h3>Verification warnings</h3><ul><li>Discrepancies are <b>review flags</b>, not ITC disallowances. Eligibility depends on the CGST/IGST Acts, rules, notifications and facts of each case; this tool assesses none of that.</li>
+<li>Credit/debit notes, RCM, ISD, import and amendment records are not treated specially; reconcile them as separate files or with signed values and review manually.</li>
+<li>GSTIN checks are format-only (no checksum or portal lookup). Confirm the GSTR-2B period matches your books period.</li></ul>
+<h3>Using the file</h3><ul><li>Needs SheetJS for Excel files. It loads from cdnjs when online; for fully offline use, save <code>xlsx.full.min.js</code> (SheetJS 0.18.5) next to this HTML file and it is picked up automatically. CSV import works without it; Excel export falls back to CSV.</li>
+<li>Large files: matching is indexed by GSTIN, so tens of thousands of rows are fine in a modern browser.</li></ul></div></section>
+</main><div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>window.XLSX||document.write('<script src="xlsx.full.min.js"><\/script>')</script>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const F=[['gstin','Supplier GSTIN',1],['inv','Invoice number',1],['date','Invoice date'],['tv','Taxable value',1],['igst','IGST'],['cgst','CGST'],['sgst','SGST / UTGST'],['cess','Cess'],['name','Supplier name']];
+const AL={gstin:/gstin|gst\s*(no|num|id)|uin/i,inv:/(invoice|inv|bill|document|doc)\s*(no|num|#)|^invoice$/i,date:/date/i,tv:/taxable|assessable/i,igst:/igst|integrated/i,cgst:/cgst|central/i,sgst:/sgst|utgst|state\s*\/?\s*ut|state tax/i,cess:/cess/i,name:/trade|legal|party|vendor|supplier name|^name|^supplier$/i};
+const ST=['Matched','Probable','Mismatch','Missing in 2B','Missing in PR','Duplicate'],COL={'Matched':'#16a34a','Probable':'#d97706','Mismatch':'#dc2626','Missing in 2B':'#4f46e5','Missing in PR':'#0284c7','Duplicate':'#9333ea'};
+const D={pr:{label:'Purchase Register'},b2:{label:'GSTR-2B'}};let R=[],G={},cfg={},fl='All',q='',pg=0,PS=100,WARN=[];
+const fm=n=>'₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}),r2=n=>Math.round(n*100)/100;
+const ds=t=>t==null?'':new Date(t).toISOString().slice(0,10);
+function toast(m,e){const t=$('#toast');t.textContent=m;t.style.borderLeftColor=e?'#ef4444':'';t.classList.add('on');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('on'),4200)}
+function theme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme=='dark'?'light':'dark';try{localStorage.setItem('rp',h.dataset.theme)}catch(e){}}
+try{const t=localStorage.getItem('rp')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.dataset.theme=t}catch(e){}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+function tab(t){document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id=='s-'+t));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));scrollTo(0,0)}
+function msg(h,c){$('#msg').innerHTML=h?`<div class="w ${c||''}">${h}</div>`:''}
+/* ---------- file reading ---------- */
+function csv(t,d){const o=[];let r=[],c='',q=0;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=0}else c+=ch}else if(ch=='"')q=1;else if(ch==d){r.push(c);c=''}else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;r.push(c);o.push(r);r=[];c=''}else c+=ch}if(c!==''||r.length){r.push(c);o.push(r)}return o.filter(r=>r.some(x=>String(x).trim()!==''))}
+function load(k,file){if(!file)return;const rd=new FileReader();rd.onerror=()=>msg('Could not read '+esc(file.name)+'. Close it in Excel and retry.','er');
+rd.onload=e=>{try{const n=file.name,ex=n.split('.').pop().toLowerCase(),sh={};
+if(['csv','tsv','txt'].includes(ex)){const t=new TextDecoder('utf-8').decode(e.target.result).replace(/^\uFEFF/,''),l=t.split(/\r?\n/)[0],d=[',',';','\t'].sort((a,b)=>l.split(b).length-l.split(a).length)[0];sh[n]=csv(t,d)}
+else if(['xlsx','xls','xlsm'].includes(ex)){if(!window.XLSX)throw Error('The SheetJS library could not load. Connect to the internet once, or save xlsx.full.min.js next to this file. CSV files work without it.');const wb=XLSX.read(e.target.result,{type:'array'});wb.SheetNames.forEach(s=>{const a=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,raw:true,defval:'',blankrows:false});if(a.length)sh[s]=a})}
+else throw Error('Unsupported file type “.'+ex+'”. Use XLSX, XLS or CSV.');
+if(!Object.keys(sh).length)throw Error('No data found in '+n+'.');
+const names=Object.keys(sh),pref=k=='pr'?/purchase|books|^pr|register/i:/2b|gstr/i;setData(k,n,sh,names.find(s=>pref.test(s))||names[0]);msg('')}catch(x){msg('<b>'+esc(file.name)+':</b> '+esc(x.message),'er')}};rd.readAsArrayBuffer(file)}
+function setData(k,name,sh,s){D[k]={label:D[k].label,name,sh};selS(k,s)}
+const autoHdr=a=>{let b=0,bi=0;a.slice(0,25).forEach((r,i)=>{let s=0;r.forEach(c=>{if(Object.values(AL).some(re=>re.test(String(c))))s++});if(s>b){b=s;bi=i}});return bi};
+function autoMap(h){const m={},u=new Set();F.forEach(([k])=>{const i=h.findIndex((c,i)=>!u.has(i)&&c!==''&&AL[k].test(c)&&!(k=='inv'&&/date/i.test(c)));if(i>=0){m[k]=i;u.add(i)}});return m}
+function selS(k,s){const d=D[k];d.s=s;d.h=autoHdr(d.sh[s]);d.m=autoMap((d.sh[s][d.h]||[]).map(String));render(k)}
+function setH(k,v){const d=D[k];d.h=Math.max(0,Math.min(d.sh[d.s].length-1,(+v||1)-1));d.m=autoMap((d.sh[d.s][d.h]||[]).map(String));render(k)}
+function setM(k,f,v){if(v==='')delete D[k].m[f];else D[k].m[f]=+v;$('#c-'+k+' .pv').innerHTML=pv(k)}
+function same(k){const o=k=='pr'?'b2':'pr',d=D[k];D[o]={label:D[o].label,name:d.name,sh:d.sh};selS(o,Object.keys(d.sh).find(s=>s!==d.s)||d.s);toast('Pick the correct sheet for '+D[o].label)}
+function render(k){const d=D[k],a=d.sh[d.s],hd=(a[d.h]||[]).map(String);
+$('#c-'+k).innerHTML=`<p><b>✔ ${esc(d.name)}</b> <small>· ${a.length} rows in sheet</small></p><div class="row"><label>Sheet<select onchange="selS('${k}',this.value)">${Object.keys(d.sh).map(s=>`<option ${s===d.s?'selected':''}>${esc(s)}</option>`).join('')}</select></label><label>Header row #<input type="number" min="1" style="width:80px" value="${d.h+1}" onchange="setH('${k}',this.value)"></label><button class="ghost" onclick="same('${k}')">Use same workbook for ${k=='pr'?'GSTR-2B':'Purchase Register'}</button></div>
+<div class="map">${F.map(([f,l,rq])=>`<label>${l}${rq?' *':''}<select onchange="setM('${k}','${f}',this.value)"><option value="">— not mapped —</option>${hd.map((h,i)=>`<option value="${i}" ${d.m[f]===i?'selected':''}>${esc(h||'(column '+(i+1)+')')}</option>`).join('')}</select></label>`).join('')}</div><div class="pv" style="margin-top:10px">${pv(k)}</div>`}
+/* ---------- parsing ---------- */
+function num(v,w){if(typeof v=='number')return v;let s=String(v??'').replace(/[₹,\s]/g,'').replace(/^\((.*)\)$/,'-$1');if(s===''||s=='-')return 0;const n=Number(s);if(isNaN(n)){w.bad++;return 0}return n}
+function dt(v){if(v===''||v==null)return null;if(typeof v=='number')return v>20000&&v<80000?Math.round((v-25569)*864e5):null;if(v instanceof Date)return Date.UTC(v.getFullYear(),v.getMonth(),v.getDate());const s=String(v).trim();let m;
+if(m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/)){let y=+m[3];if(y<100)y+=2000;if(+m[2]>12||+m[1]>31)return null;return Date.UTC(y,m[2]-1,m[1])}
+if(m=s.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/))return Date.UTC(+m[1],m[2]-1,+m[3]);
+if(m=s.match(/^(\d{1,2})[\s\-\/]([A-Za-z]{3})[a-z]*[\s\-\/,]+(\d{2,4})/)){const mo='jan feb mar apr may jun jul aug sep oct nov dec'.split(' ').indexOf(m[2].toLowerCase());if(mo>=0){let y=+m[3];if(y<100)y+=2000;return Date.UTC(y,mo,+m[1])}}return null}
+function parse(k){const d=D[k],a=d.sh[d.s],m=d.m,w={bad:0,baddate:0,badg:0,blank:0,nokey:0},rows=[];
+for(let i=d.h+1;i<a.length;i++){const r=a[i],g=f=>m[f]==null?'':(r[m[f]]??'');if(!r.some(c=>String(c).trim()!=='')){w.blank++;continue}
+const o={src:k,row:i+1,gs:String(g('gstin')).trim(),inv:String(g('inv')).trim(),name:String(g('name')).trim()};
+o.gstin=o.gs.toUpperCase().replace(/[^A-Z0-9]/g,'');o.invN=o.inv.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean).map(s=>s.replace(/^0+(?=\d)/,'')).join('');
+o.date=dt(g('date'));if(m.date!=null&&String(g('date')).trim()!==''&&o.date==null)w.baddate++;
+['tv','igst','cgst','sgst','cess'].forEach(f=>o[f]=num(g(f),w));o.tax=o.igst+o.cgst+o.sgst+o.cess;
+o.gOk=/^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(o.gstin);if(o.gstin&&!o.gOk)w.badg++;if(!o.gstin||!o.invN)w.nokey++;rows.push(o)}return{rows,w}}
+function pv(k){try{const{rows,w}=parse(k);return `<small>${rows.length} records read · ${w.blank} blank rows skipped${w.nokey?` · <span class="bad">${w.nokey} without GSTIN/invoice no.</span>`:''}</small><div class="tw" style="max-height:190px;margin-top:6px"><table><tr><th>GSTIN</th><th>Invoice</th><th>Date</th><th>Taxable</th><th>Tax</th></tr>${rows.slice(0,5).map(o=>`<tr><td class="${o.gOk?'':'bad'}">${esc(o.gstin)||'—'}</td><td>${esc(o.inv)||'—'}</td><td class="${o.date==null?'bad':''}">${ds(o.date)||'?'}</td><td class="n">${fm(o.tv)}</td><td class="n">${fm(o.tax)}</td></tr>`).join('')}</table></div>`}catch(e){return '<small class="bad">Preview unavailable – check column mapping.</small>'}}
+/* ---------- engine ---------- */
+function lev(a,b){const m=a.length,n=b.length;if(!m||!n)return Math.max(m,n);let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+const sim=(a,b)=>a===b?1:1-lev(a,b)/Math.max(a.length,b.length,1);
+function mk(p,b,ex,s,conf,note){const r={p,b,conf,n:[],dec:'',rem:''};const df=f=>r2((p?p[f]:0)-(b?b[f]:0));r.d={tv:df('tv'),igst:df('igst'),cgst:df('cgst'),sgst:df('sgst'),cess:df('cess'),tax:df('tax')};
+const tb=['igst','cgst','sgst','cess'].filter(f=>Math.abs(r.d[f])>cfg.tol),vb=Math.abs(r.d.tv)>cfg.tol,dd=p.date!=null&&b.date!=null?Math.round(Math.abs(p.date-b.date)/864e5):0,db=dd>cfg.days;
+if(note)r.n.push(note);if(!ex)r.n.push(`Invoice no. differs: PR “${p.inv}” vs 2B “${b.inv}” (${Math.round(s*100)}% similar)`);
+if(vb)r.n.push(`Taxable value differs by ${fm(r.d.tv)} (PR − 2B)`);tb.forEach(f=>r.n.push(f.toUpperCase()+` differs by ${fm(r.d[f])}`));if(db)r.n.push(`Invoice dates differ by ${dd} days`);
+r.status=!ex?'Probable':(vb||tb.length||db)?'Mismatch':'Matched';if(r.status=='Matched')r.n.push('All values within tolerance');return r}
+function go(){try{
+for(const k of['pr','b2']){if(!D[k].sh){msg('Load the '+D[k].label+' first (or use the demo data).','er');return}const miss=F.filter(([f,,rq])=>rq&&D[k].m[f]==null).map(x=>x[1]);if(miss.length){msg(`Map these required columns in <b>${D[k].label}</b>: ${miss.join(', ')}.`,'er');return}}
+cfg={tol:Math.max(0,+$('#tol').value||0),days:Math.max(0,+$('#days').value||0),thr:Math.min(99,Math.max(50,+$('#thr').value||80)),fuzzy:$('#fz').checked,per:$('#per').value.trim()};
+const P=parse('pr'),B=parse('b2');if(!P.rows.length||!B.rows.length){msg('One of the datasets has no data rows below the header row. Check the header row number.','er');return}
+msg('');toast('Reconciling…');setTimeout(()=>{core(P,B);dash();tab('dash')},30)}catch(e){msg('Unexpected error: '+esc(e.message),'er')}}
+function core(P,B){const byG={};B.rows.forEach((b,i)=>{b.id=i;if(b.gstin)(byG[b.gstin]=byG[b.gstin]||[]).push(b)});P.rows.forEach((p,i)=>p.id=i);
+const cand=[];P.rows.forEach(p=>{if(!p.gstin||!p.invN)return;(byG[p.gstin]||[]).forEach(b=>{if(!b.invN)return;const ex=p.invN===b.invN;if(!ex&&(!cfg.fuzzy||Math.abs(p.invN.length-b.invN.length)>3))return;const s=ex?1:sim(p.invN,b.invN),dv=Math.abs(p.tv-b.tv),dd=p.date!=null&&b.date!=null?Math.abs(p.date-b.date)/864e5:null,
+vs=dv<=cfg.tol?1:Math.max(0,1-dv/Math.max(Math.abs(p.tv),Math.abs(b.tv),1)),dsx=dd==null?.5:dd<=cfg.days?1:Math.max(0,1-dd/90);
+if(!ex&&!(s>=cfg.thr/100||(s>=.5&&vs==1&&dsx==1)))return;cand.push({p,b,ex,s,conf:Math.round(100*(.5*s+.3*vs+.2*dsx)),dv})})});
+cand.sort((x,y)=>(y.ex-x.ex)||(y.conf-x.conf)||(x.dv-y.dv));const up=new Set,ub=new Set;R=[];
+cand.forEach(c=>{if(up.has(c.p.id)||ub.has(c.b.id))return;up.add(c.p.id);ub.add(c.b.id);R.push(mk(c.p,c.b,c.ex,c.s,c.conf))});
+if(cfg.fuzzy){const bi={};B.rows.forEach(b=>{if(!ub.has(b.id)&&b.invN)(bi[b.invN]=bi[b.invN]||[]).push(b)});P.rows.forEach(p=>{if(up.has(p.id)||!p.invN)return;const b=(bi[p.invN]||[]).find(b=>!ub.has(b.id)&&Math.abs(b.tv-p.tv)<=cfg.tol);if(b){up.add(p.id);ub.add(b.id);R.push(mk(p,b,true,1,55,`GSTIN differs: PR ${p.gstin||'blank'} vs 2B ${b.gstin||'blank'}`));R[R.length-1].status='Probable'}})}
+const cnt=(rows)=>{const c={};rows.forEach(o=>{if(o.gstin&&o.invN){const k=o.gstin+'|'+o.invN;c[k]=(c[k]||0)+1}});return c},cP=cnt(P.rows),cB=cnt(B.rows);
+const left=(rows,used,side,cc)=>rows.forEach(o=>{if(used.has(o.id))return;const nk=!o.gstin||!o.invN,k=o.gstin+'|'+o.invN,dup=!nk&&cc[k]>1,r={p:side=='pr'?o:null,b:side=='b2'?o:null,conf:0,dec:'',rem:'',side,
+d:{tv:r2(side=='pr'?o.tv:-o.tv),igst:r2(side=='pr'?o.igst:-o.igst),cgst:r2(side=='pr'?o.cgst:-o.cgst),sgst:r2(side=='pr'?o.sgst:-o.sgst),cess:r2(side=='pr'?o.cess:-o.cess),tax:r2(side=='pr'?o.tax:-o.tax)}};
+const sn=side=='pr'?'Purchase Register':'GSTR-2B',on=side=='pr'?'GSTR-2B':'Purchase Register';
+if(dup){r.status='Duplicate';r.n=[`Same GSTIN + invoice no. appears ${cc[k]}× in ${sn}; extra copy not paired (possible double entry / double ITC claim — verify)`]}
+else{r.status=side=='pr'?'Missing in 2B':'Missing in PR';r.n=[nk?`GSTIN or invoice number blank in ${sn}; cannot be matched (could be a total/blank-key row — verify)`:`Not found in ${on} for this GSTIN`+(side=='pr'?' (check supplier filing, period, or keying)':' (check whether booked, or period/ITC timing)')]}R.push(r)});
+left(P.rows,up,'pr',cP);left(B.rows,ub,'b2',cB);
+R.forEach(r=>{if(r.status!='Matched'&&r.status!='Missing in 2B'&&r.status!='Missing in PR'){const p=r.p,b=r.b;[p,b].forEach(o=>{if(o&&!o.gOk&&o.gstin)r.n.push('GSTIN format looks invalid')})}});
+R.sort((a,b)=>ST.indexOf(a.status)-ST.indexOf(b.status)||a.conf-b.conf);R.forEach((r,i)=>r.i=i);
+G={P,B,np:P.rows.length,nb:B.rows.length,itcP:P.rows.reduce((s,o)=>s+o.tax,0),itcB:B.rows.reduce((s,o)=>s+o.tax,0)};
+G.acc=R.reduce((s,r)=>s+(r.p?1:0),0)==G.np&&R.reduce((s,r)=>s+(r.b?1:0),0)==G.nb;
+WARN=[];[['pr',P],['b2',B]].forEach(([k,x])=>{const L=D[k].label,w=x.w;if(w.bad)WARN.push(`${L}: ${w.bad} non-numeric amount cells were read as 0.`);if(w.baddate)WARN.push(`${L}: ${w.baddate} dates could not be parsed (date scoring skipped for them).`);if(w.badg)WARN.push(`${L}: ${w.badg} GSTINs fail the format check.`);if(w.nokey)WARN.push(`${L}: ${w.nokey} rows lack GSTIN or invoice no. and are listed as unmatched.`);if(w.blank)WARN.push(`${L}: ${w.blank} fully blank rows skipped.`);['date','igst','cgst','sgst'].forEach(f=>{if(D[k].m[f]==null)WARN.push(`${L}: “${F.find(z=>z[0]==f)[1]}” not mapped – treated as blank/zero.`)});
+const ts=x.rows.map(o=>o.date).filter(t=>t!=null);if(ts.length)WARN.push(`${L}: invoice dates span ${ds(Math.min(...ts))} to ${ds(Math.max(...ts))} — confirm this matches the reporting period.`)});
+fl='All';q='';pg=0}
+/* ---------- dashboard ---------- */
+const eff=r=>r.status=='Matched'||r.dec=='Accepted',unres=r=>r.status!='Matched'&&r.dec!='Accepted'&&r.dec!='Confirmed';
+function flags(){let a=0,b=0,c=0;R.forEach(r=>{if(r.dec=='Accepted')return;if(r.status=='Missing in 2B')a+=r.p.tax;else if(r.status=='Missing in PR')b+=r.b.tax;else if(r.status=='Duplicate'&&r.p)c+=r.p.tax;else if(r.p&&r.b&&r.status!='Matched'){const d=r.p.tax-r.b.tax;if(d>0)a+=d;else b-=d}});return{a:r2(a),b:r2(b),c:r2(c)}}
+function dash(){if(!R.length)return;$('#empty').style.display='none';const c={};ST.forEach(k=>c[k]=0);R.forEach(r=>c[r.status]++);const fg=flags(),rec=R.filter(r=>r.p&&r.b&&eff(r)).length,pc=G.np?rec/G.np*100:0,un=R.filter(unres).length;
+$('#phd').innerHTML=`Period: ${esc(cfg.per||'not specified')} · Generated ${new Date().toLocaleString('en-IN')} · Tolerance ₹${cfg.tol}, date window ${cfg.days}d`;
+const K=[['Purchase Register invoices',G.np,'n'],['GSTR-2B invoices',G.nb,'n'],['Reconciled (PR basis)',pc,'p'],['Books ITC (PR)',G.itcP,'c'],['GSTR-2B ITC',G.itcB,'c'],['Books − 2B ITC',G.itcP-G.itcB,'c'],['Open exceptions',un,'n']];
+const C=2*Math.PI*60,tot=R.length;let acc=0;const seg=ST.map(k=>{const l=c[k]/tot*C,s=`<circle cx="80" cy="80" r="60" fill="none" stroke="${COL[k]}" stroke-width="22" stroke-dasharray="${l} ${C-l}" stroke-dashoffset="${-acc}" transform="rotate(-90 80 80)" style="cursor:pointer" onclick="setF('${k}')"><title>${k}: ${c[k]}</title></circle>`;acc+=l;return s}).join('');
+const mx=Math.max(G.itcP,G.itcB,fg.a,fg.b,fg.c,1),B=(l,v,col)=>`<div class="bar"><em>${l}</em><i data-w="${v/mx*100}" style="background:${col}"></i><b>${fm(v)}</b></div>`;
+$('#dashc').innerHTML=`<div class="kp">${K.map(([l,v,t])=>`<div class="k"><span>${l}</span><b class="cu" data-v="${v}" data-t="${t}">0</b></div>`).join('')}</div>
+${G.acc?`<div class="w ok">✔ Integrity check: all ${G.np} PR rows and ${G.nb} 2B rows are accounted for exactly once.</div>`:'<div class="w er">Integrity check failed – please report this file.</div>'}
+<div class="card cols"><svg viewBox="0 0 160 160" width="240" role="img" aria-label="Status distribution">${seg}<text x="80" y="78" text-anchor="middle" fill="currentColor" font-size="22" font-weight="700">${pc.toFixed(1)}%</text><text x="80" y="96" text-anchor="middle" fill="currentColor" font-size="9" opacity=".7">reconciled</text></svg>
+<div><h3>Status and ITC review flags</h3><div class="chips" style="margin-bottom:10px">${ST.map(k=>`<span class="pill" style="background:${COL[k]};cursor:pointer" onclick="setF('${k}')">${k}: ${c[k]}</span>`).join('')}</div>
+${B('Books ITC (PR)',G.itcP,'#0b2545')}${B('GSTR-2B ITC',G.itcB,'#0e9f93')}${B('In books, not supported by 2B',fg.a,'#4f46e5')}${B('In 2B, not in books',fg.b,'#0284c7')}${B('Duplicate PR entries',fg.c,'#9333ea')}
+<small>These are potential discrepancies for review, not ITC disallowances. Eligibility is for the professional to determine.</small></div></div>
+${WARN.length?`<div class="card"><h3>Verification warnings</h3>${WARN.map(w=>`<div class="w">${esc(w)}</div>`).join('')}</div>`:''}
+<div class="card"><div class="row noprint" style="justify-content:space-between"><div class="chips" id="chips"></div><div class="row" style="margin:0"><input type="text" id="srch" placeholder="Search GSTIN, invoice, name, reason…" style="width:260px" oninput="q=this.value.toLowerCase();pg=0;tbl()"><button class="b" onclick="exp()">Export Excel</button><button class="ghost" onclick="prt()">Print report</button></div></div><div id="tb"></div></div>`;
+document.querySelectorAll('.cu').forEach(el=>{const v=+el.dataset.v,t=el.dataset.t,f=x=>t=='c'?fm(x):t=='p'?x.toFixed(1)+'%':Math.round(x).toLocaleString('en-IN'),t0=performance.now();(function s(n){const p=Math.min(1,(n-t0)/800);el.textContent=f(v*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(s)})(t0)});
+requestAnimationFrame(()=>document.querySelectorAll('.bar i').forEach(i=>i.style.width=i.dataset.w+'%'));chips();tbl()}
+function chips(){const el=$('#chips');if(!el)return;el.innerHTML=['All',...ST,'Unresolved'].map(k=>`<button class="chip ${fl==k?'on':''}" onclick="setF('${k}')">${k}</button>`).join('')}
+function setF(k){fl=k;pg=0;chips();tbl();$('#tb').scrollIntoView({behavior:'smooth'})}
+function view(){return R.filter(r=>(fl=='All'||(fl=='Unresolved'?unres(r):r.status==fl))&&(!q||[r.p?.gstin,r.b?.gstin,r.p?.inv,r.b?.inv,r.p?.name,r.b?.name,r.status,r.n.join(' ')].join(' ').toLowerCase().includes(q)))}
+function tbl(){const v=view(),pgs=Math.max(1,Math.ceil(v.length/PS));pg=Math.min(pg,pgs-1);const s=v.slice(pg*PS,pg*PS+PS);
+$('#tb').innerHTML=`<small>${v.length} records${v.length>PS?` · page ${pg+1}/${pgs}`:''}</small><div class="tw"><table><tr><th>Status</th><th>Conf.</th><th>Supplier</th><th>Invoice PR / 2B</th><th>Date PR / 2B</th><th class="n">Taxable PR / 2B</th><th class="n">Tax PR / 2B</th><th class="n">Tax diff</th><th>Why flagged</th><th>Review</th></tr>
+${s.map(r=>{const p=r.p,b=r.b,o=p||b;return `<tr><td><span class="pill" style="background:${COL[r.status]}">${r.status}</span></td><td>${r.conf?r.conf+'%':'–'}</td><td>${esc(o.gstin||o.gs)||'—'}<br><small>${esc(p?.name||b?.name)}</small></td><td>${esc(p?.inv)||'—'}<br>${esc(b?.inv)||'—'}</td><td>${ds(p?.date)||'—'}<br>${ds(b?.date)||'—'}</td><td class="n">${p?fm(p.tv):'—'}<br>${b?fm(b.tv):'—'}</td><td class="n">${p?fm(p.tax):'—'}<br>${b?fm(b.tax):'—'}</td><td class="n ${Math.abs(r.d.tax)>cfg.tol?'bad':''}">${fm(r.d.tax)}</td><td style="min-width:220px">${r.n.map(esc).join('<br>')}</td>
+<td><select onchange="R[${r.i}].dec=this.value"><option value="">Pending</option>${[['Accepted','Accept as matched'],['Confirmed','Confirm exception'],['Query','Query supplier']].map(([a,t])=>`<option value="${a}" ${r.dec==a?'selected':''}>${t}</option>`).join('')}</select><br><input type="text" class="rm" placeholder="Remark" value="${esc(r.rem)}" onchange="R[${r.i}].rem=this.value"></td></tr>`}).join('')||'<tr><td colspan="10">No records match this filter.</td></tr>'}</table></div>
+${pgs>1?`<div class="row noprint"><button class="ghost" onclick="pg=Math.max(0,pg-1);tbl()">‹ Prev</button><button class="ghost" onclick="pg=Math.min(${pgs-1},pg+1);tbl()">Next ›</button></div>`:''}`}
+function prt(){const o=PS;PS=1e9;tbl();setTimeout(()=>{print();PS=o;tbl()},100)}
+/* ---------- export ---------- */
+const H=['Status','Confidence %','Exception reason','Supplier GSTIN','Supplier name','PR invoice no.','2B invoice no.','PR date','2B date','PR taxable','2B taxable','Taxable diff','PR IGST','2B IGST','IGST diff','PR CGST','2B CGST','CGST diff','PR SGST','2B SGST','SGST diff','PR Cess','2B Cess','Cess diff','PR total tax','2B total tax','Tax diff (PR−2B)','Reviewer decision','Reviewer remarks','PR row','2B row'];
+function line(r){const p=r.p,b=r.b,v=(o,f)=>o?o[f]:'',o=p||b,t=(f)=>[v(p,f),v(b,f),r.d[f]];return [r.status,r.conf||'',r.n.join('; '),o.gs||o.gstin,p?.name||b?.name||'',v(p,'inv'),v(b,'inv'),ds(p?.date),ds(b?.date),...t('tv'),...t('igst'),...t('cgst'),...t('sgst'),...t('cess'),v(p,'tax'),v(b,'tax'),r.d.tax,{Accepted:'Accepted as matched',Confirmed:'Exception confirmed',Query:'Query supplier'}[r.dec]||'Pending',r.rem,v(p,'row'),v(b,'row')]}
+function exp(){const c={};ST.forEach(k=>c[k]=R.filter(r=>r.status==k).length);const fg=flags(),per=cfg.per||'',
+sum=[['GST RecoPro – Reconciliation summary'],['Reporting period',per||'Not specified'],['Generated',new Date().toLocaleString('en-IN')],['Purchase Register file',D.pr.name+' / '+D.pr.s],['GSTR-2B file',D.b2.name+' / '+D.b2.s],[],['Settings'],['Amount tolerance (₹)',cfg.tol],['Date window (days)',cfg.days],['Fuzzy matching',cfg.fuzzy?'On, threshold '+cfg.thr+'%':'Off'],[],['Counts'],['PR invoices',G.np],['2B invoices',G.nb],...ST.map(k=>[k,c[k]]),['Open exceptions',R.filter(unres).length],[],['ITC (review flags – not disallowances)'],['Books ITC (PR)',r2(G.itcP)],['GSTR-2B ITC',r2(G.itcB)],['In books, not supported by 2B',fg.a],['In 2B, not in books',fg.b],['Duplicate PR entries',fg.c],[],['Warnings'],...WARN.map(w=>[w]),[],['Methodology: exact match on GSTIN + normalised invoice no.; optional fuzzy match; one-to-one pairing; confidence = 50% invoice + 30% value + 20% date.'],['Disclaimer: discrepancies are review flags only. ITC eligibility must be determined by the professional under applicable law. This tool gives no legal conclusion.']];
+const sh=(f)=>[H,...R.filter(f).map(line)];
+if(!window.XLSX){const a=sh(()=>1).map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n'),l=document.createElement('a');l.href=URL.createObjectURL(new Blob(['\uFEFF'+a],{type:'text/csv'}));l.download='GST_RecoPro_all.csv';l.click();toast('SheetJS unavailable – exported CSV instead',1);return}
+const wb=XLSX.utils.book_new(),add=(n,a,wd)=>{const w=XLSX.utils.aoa_to_sheet(a);w['!cols']=wd||a[0].map((_,i)=>({wch:[12,10,60,18,24,16,16,11,11][i]||13}));XLSX.utils.book_append_sheet(wb,w,n)};
+add('Summary',sum,[{wch:42},{wch:40}]);add('Matched',sh(r=>r.status=='Matched'));add('Mismatches',sh(r=>r.status=='Mismatch'||r.status=='Probable'));add('Missing invoices',sh(r=>r.status.startsWith('Missing')));add('Duplicates',sh(r=>r.status=='Duplicate'));add('Unresolved',sh(unres));
+XLSX.writeFile(wb,'GST_RecoPro_'+(per.replace(/[^\w]+/g,'_')||'report')+'.xlsx');toast('Excel report downloaded')}
+/* ---------- demo ---------- */
+function demo(){let sd=7;const rnd=()=>(sd=(sd*9301+49297)%233280)/233280,S=[['24AABCA1234A1Z5','Alpha Steels Pvt Ltd'],['24BBBCB2345B1Z6','Bharat Packaging'],['27CCDCC3456C1Z7','Cobalt Logistics'],['24DDEDD4567D1Z8','Delta Electricals'],['29EEFEE5678E1Z9','Eastern Chemicals']];
+const pr=[['Sr','Party GSTIN','Party Name','Bill No','Bill Date','Taxable Amt','IGST Amt','CGST Amt','SGST Amt','Cess Amt']],b2=[['GSTR-2B – Auto-drafted ITC statement'],['Return period: September 2025'],[],['GSTIN of supplier','Trade/Legal name','Invoice number','Invoice Date','Taxable Value (₹)','Integrated Tax(₹)','Central Tax(₹)','State/UT Tax(₹)','Cess(₹)']];
+const pad=n=>String(n).padStart(2,'0');let sr=1;
+for(let i=0;i<36;i++){const s=S[i%5],no=i+1,day=1+Math.floor(rnd()*28),tv=Math.round(5000+rnd()*95000),t=Math.round(tv*.18*100)/100,intra=s[0].startsWith('24'),ig=intra?0:t,cg=intra?t/2:0,sg=cg;
+const pn=`${'ABCDE'[i%5]}/25-26/${String(no).padStart(4,'0')}`,bn=i%3?pn.replace(/\//g,'-'):pn,pd=`${pad(day)}/09/2025`;
+pr.push([sr++,s[0],s[1],pn,pd,tv,ig,cg,sg,0]);if(i==15)pr.push([sr++,s[0],s[1],pn,pd,tv,ig,cg,sg,0]);if(i==12)continue;
+let btv=tv,bi=ig,bc=cg,bs=sg,bno=bn,bday=day;
+if(i%9==3){btv=tv-1200;const tt=btv*.18;bi=intra?0:tt;bc=bs=intra?tt/2:0}
+if(i%11==5){if(intra){bc=cg-45;bs=sg-45}else bi=ig-90}
+if(i==7)bno=bn.replace('0008','0080');if(i==25)bday=day>14?day-12:day+12;
+b2.push([s[0],s[1],bno,i%2?`${pad(bday)}-09-2025`:Math.round(Date.UTC(2025,8,bday)/864e5+25569),btv,Math.round(bi*100)/100,Math.round(bc*100)/100,Math.round(bs*100)/100,0])}
+b2.push(['24AABCA1234A1Z5','Alpha Steels Pvt Ltd','A/25-26/0099','18-09-2025',18500,0,1665,1665,0],['29EEFEE5678E1Z9','Eastern Chemicals','E/25-26/0077','21-09-2025',42000,7560,0,0,0]);
+setData('pr','Demo_Purchase_Register.xlsx',{'Purchase Register':pr},'Purchase Register');setData('b2','Demo_GSTR2B.xlsx',{'GSTR-2B B2B':b2},'GSTR-2B B2B');$('#per').value='September 2025';msg('Demo data loaded. Review the column mapping, then press <b>Run reconciliation</b>.','ok')}
+/* ---------- wiring ---------- */
+document.querySelectorAll('.dz').forEach(z=>{const k=z.dataset.k,i=z.querySelector('input');i.onchange=()=>{load(k,i.files[0]);i.value=''};['dragover','dragenter'].forEach(e=>z.addEventListener(e,ev=>{ev.preventDefault();z.classList.add('hv')}));['dragleave','drop'].forEach(e=>z.addEventListener(e,ev=>{ev.preventDefault();z.classList.remove('hv')}));z.addEventListener('drop',ev=>load(k,ev.dataTransfer.files[0]))});
+</script></body></html>
